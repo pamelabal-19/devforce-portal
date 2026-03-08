@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git & Repos — Guía para Designers</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f5f2ec;
+    --accent: #e85d2f;
+    --accent2: #2f6de8;
+    --accent3: #2ec47a;
+    --muted: #8a8579;
+    --line: #d8d3c8;
+    --code-bg: #1a1916;
+    --code-text: #e8e4db;
+    --tag-yellow: #f5d84e;
+    --tag-pink: #f5a0c8;
+    --tag-blue: #a0c8f5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; background: var(--ink); z-index: 100; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; border-bottom: 2px solid var(--accent); }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--paper); letter-spacing: -0.02em; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .hero { margin-top: 56px; min-height: 92vh; background: var(--ink); display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
+  .hero-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
+  .hero-left { padding: 5rem 3rem 5rem 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 1; }
+  .hero-eyebrow { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--accent); }
+  .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(3rem, 5vw, 5rem); line-height: 0.95; color: var(--paper); letter-spacing: -0.03em; margin-bottom: 2rem; }
+  .hero h1 em { font-style: italic; font-family: 'Fraunces', serif; color: var(--accent); font-weight: 300; }
+  .hero-desc { color: var(--muted); font-size: 0.9rem; max-width: 420px; margin-bottom: 2.5rem; line-height: 1.8; }
+  .hero-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tag { padding: 0.3rem 0.8rem; border-radius: 2px; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; font-family: 'Syne', sans-serif; }
+  .tag-y { background: var(--tag-yellow); color: var(--ink); }
+  .tag-p { background: var(--tag-pink); color: var(--ink); }
+  .tag-b { background: var(--tag-blue); color: var(--ink); }
+  .tag-g { background: var(--accent3); color: var(--ink); }
+  .tag-o { background: var(--accent); color: white; }
+  .hero-right { display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; padding: 3rem; }
+  .terminal { background: #111; border: 1px solid #333; border-radius: 8px; width: 100%; max-width: 460px; box-shadow: 0 40px 80px rgba(0,0,0,0.5); overflow: hidden; }
+  .terminal-bar { background: #222; padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #333; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .terminal-title { color: #666; font-size: 0.7rem; margin-left: auto; }
+  .terminal-body { padding: 1.5rem; font-family: 'DM Mono', monospace; font-size: 0.8rem; line-height: 2; }
+  .t-prompt { color: var(--accent3); }
+  .t-cmd { color: var(--code-text); }
+  .t-comment { color: #555; }
+  .t-output { color: #888; }
+  .t-highlight { color: var(--accent); }
+  .cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent3); animation: blink 1s infinite; vertical-align: middle; margin-left: 2px; }
+  @keyframes blink { 0%,50% { opacity:1 } 51%,100% { opacity:0 } }
+  .section { padding: 5rem 4rem; border-bottom: 1px solid var(--line); max-width: 1200px; margin: 0 auto; }
+  .section-full { padding: 5rem 4rem; border-bottom: 1px solid var(--line); }
+  .section-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; font-family: 'Syne', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+  .section-label::before { content: '//'; opacity: 0.4; }
+  .section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 1rem; color: var(--ink); }
+  .section-title em { font-style: italic; font-family: 'Fraunces', serif; font-weight: 300; }
+  .section-intro { color: var(--muted); max-width: 580px; margin-bottom: 3rem; line-height: 1.8; }
+  .code-block { background: var(--code-bg); border-radius: 6px; overflow: hidden; margin: 1.5rem 0; border: 1px solid #2a2a28; }
+  .code-header { background: #222; padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
+  .code-lang { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #666; font-family: 'Syne', sans-serif; font-weight: 600; }
+  .code-title-label { font-size: 0.7rem; color: var(--accent); font-family: 'DM Mono', monospace; }
+  .code-body { padding: 1.5rem; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.9; color: var(--code-text); }
+  .code-body .c { color: #555; font-style: italic; }
+  .code-body .cmd { color: var(--accent3); }
+  .code-body .flag { color: var(--tag-blue); }
+  .code-body .str { color: var(--tag-yellow); }
+  .code-body .key { color: var(--accent); }
+  .steps { display: grid; gap: 1rem; }
+  .step { display: grid; grid-template-columns: 48px 1fr; gap: 1.5rem; align-items: start; padding: 1.5rem; border: 1px solid var(--line); border-radius: 4px; background: white; transition: border-color 0.2s, transform 0.2s; }
+  .step:hover { border-color: var(--accent); transform: translateX(4px); }
+  .step-num { width: 48px; height: 48px; background: var(--ink); color: var(--paper); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; flex-shrink: 0; }
+  .step-num.accent { background: var(--accent); }
+  .step-num.blue { background: var(--accent2); }
+  .step-num.green { background: var(--accent3); color: var(--ink); }
+  .step-content h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; letter-spacing: -0.02em; }
+  .step-content p { color: var(--muted); font-size: 0.82rem; line-height: 1.7; }
+  .inline-code { background: var(--code-bg); color: var(--accent3); padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.78rem; font-family: 'DM Mono', monospace; }
+  .info-box { border-left: 3px solid; padding: 1rem 1.5rem; border-radius: 0 4px 4px 0; margin: 1.5rem 0; font-size: 0.85rem; }
+  .info-box.tip { border-color: var(--accent3); background: rgba(46,196,122,0.06); }
+  .info-box.warn { border-color: var(--tag-yellow); background: rgba(245,216,78,0.06); }
+  .info-box.note { border-color: var(--accent2); background: rgba(47,109,232,0.06); }
+  .info-box strong { display: block; margin-bottom: 0.3rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .info-box.tip strong { color: var(--accent3); }
+  .info-box.warn strong { color: #c9a800; }
+  .info-box.note strong { color: var(--accent2); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+  .folder-tree { background: var(--code-bg); border-radius: 6px; padding: 1.5rem; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 2; color: var(--code-text); border: 1px solid #2a2a28; }
+  .folder-tree .folder { color: var(--tag-blue); }
+  .folder-tree .file { color: var(--code-text); }
+  .folder-tree .comment { color: #555; }
+  .folder-tree .important { color: var(--accent); }
+  .folder-tree .special { color: var(--accent3); }
+  .card { background: white; border: 1px solid var(--line); border-radius: 6px; padding: 1.5rem; transition: box-shadow 0.2s; }
+  .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .card p { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+  .card .card-icon { font-size: 1.5rem; margin-bottom: 0.8rem; display: block; }
+  .card .card-tag { display: inline-block; margin-top: 0.8rem; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 2px; font-family: 'Syne', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .branch-viz { background: var(--code-bg); border-radius: 8px; padding: 2rem; margin: 2rem 0; position: relative; overflow: hidden; border: 1px solid #2a2a28; }
+  .branch-line { display: flex; align-items: center; margin: 0.8rem 0; position: relative; }
+  .branch-name { font-size: 0.7rem; font-family: 'Syne', sans-serif; font-weight: 700; width: 80px; flex-shrink: 0; text-align: right; padding-right: 1rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .branch-track { flex: 1; display: flex; align-items: center; position: relative; }
+  .branch-rail { height: 2px; flex: 0 0 40px; border-radius: 2px; }
+  .commit-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid; flex-shrink: 0; margin: 0 4px; position: relative; cursor: pointer; transition: transform 0.2s; }
+  .commit-dot:hover { transform: scale(1.4); }
+  .commit-dot::after { content: attr(data-msg); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.6rem; white-space: nowrap; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-family: 'DM Mono', monospace; z-index: 10; }
+  .commit-dot:hover::after { opacity: 1; }
+  .branch-label { color: #555; font-size: 0.65rem; margin-left: 1rem; font-style: italic; }
+  .tech-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tech-tab { padding: 0.4rem 1rem; border: 1px solid var(--line); border-radius: 3px; font-size: 0.72rem; font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; background: white; color: var(--muted); transition: all 0.15s; }
+  .tech-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .tech-tab:hover:not(.active) { border-color: var(--ink); color: var(--ink); }
+  .tech-content { display: none; }
+  .tech-content.active { display: block; }
+  .sb-preview { background: white; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+  .sb-bar { background: #333; padding: 0.6rem 1rem; display: flex; gap: 1rem; align-items: center; }
+  .sb-bar-logo { color: #ff4785; font-weight: 700; font-size: 0.8rem; font-family: 'Syne', sans-serif; }
+  .sb-bar-nav { display: flex; gap: 0.8rem; }
+  .sb-bar-nav span { font-size: 0.7rem; color: #888; cursor: pointer; }
+  .sb-bar-nav span.sb-active { color: white; }
+  .sb-layout { display: grid; grid-template-columns: 200px 1fr; min-height: 280px; }
+  .sb-sidebar { background: #f8f8f8; border-right: 1px solid #e0e0e0; padding: 1rem; }
+  .sb-sidebar h4 { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 0.5rem; font-family: 'Syne', sans-serif; font-weight: 700; }
+  .sb-item { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 3px; cursor: pointer; color: #555; font-family: 'DM Mono', monospace; }
+  .sb-item.sb-selected { background: #ff4785; color: white; border-radius: 3px; }
+  .sb-item.sb-child { padding-left: 1.2rem; }
+  .sb-canvas { display: flex; align-items: center; justify-content: center; background: white; padding: 2rem; gap: 1rem; flex-wrap: wrap; }
+  .demo-btn { padding: 0.6rem 1.4rem; border-radius: 4px; border: none; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; letter-spacing: 0.02em; }
+  .demo-btn.primary { background: var(--accent); color: white; }
+  .demo-btn.secondary { background: white; color: var(--ink); border: 1px solid var(--ink); }
+  .demo-btn.ghost { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); }
+  .analogy { background: var(--ink); color: var(--paper); border-radius: 8px; padding: 2rem; margin: 1.5rem 0; display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; }
+  .analogy-side { text-align: center; }
+  .analogy-emoji { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+  .analogy-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 600; margin-bottom: 0.3rem; }
+  .analogy-concept { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+  .analogy-arrow { color: var(--accent); font-size: 1.5rem; font-family: 'Syne', sans-serif; }
+  .analogy-desc { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.5; }
+  .divider { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  .index-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .index-item { border: 1px solid #333; border-radius: 4px; padding: 1rem 1.2rem; background: #1a1916; text-decoration: none; color: var(--paper); transition: all 0.15s; display: flex; align-items: center; gap: 0.8rem; }
+  .index-item:hover { border-color: var(--accent); background: var(--accent); transform: translateY(-2px); }
+  .index-item .num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; opacity: 0.3; }
+  .index-item .label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: -0.01em; }
+  footer { background: var(--ink); color: var(--muted); text-align: center; padding: 3rem; font-size: 0.75rem; }
+  footer strong { color: var(--accent); }
+  .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .section, .section-full { padding: 3rem 1.5rem; }
+    .analogy { grid-template-columns: 1fr; }
+    .sb-layout { grid-template-columns: 1fr; }
+    .sb-sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Git<span>&</span>Repos</div>
+  <ul class="nav-links">
+    <li><a href="#que-es">¿Qué es?</a></li>
+    <li><a href="#crear">Crear</a></li>
+    <li><a href="#clonar">Clonar</a></li>
+    <li><a href="#carpetas">Carpetas</a></li>
+    <li><a href="#branches">Branches</a></li>
+    <li><a href="#deploy">Deploy</a></li>
+    <li><a href="#storybook">Storybook</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-left">
+    <div class="hero-eyebrow">Guía para Designers</div>
+    <h1>Git & Repos<br>sin <em>miedo</em></h1>
+    <p class="hero-desc">Todo lo que necesitás saber sobre repositorios, git, estructura de proyectos, branches, deploys y Storybook. Explicado en lenguaje humano, con analogías reales.</p>
+    <div class="hero-tags">
+      <span class="tag tag-y">Git</span>
+      <span class="tag tag-p">GitHub</span>
+      <span class="tag tag-b">Branches</span>
+      <span class="tag tag-g">Storybook</span>
+      <span class="tag tag-o">Deploy</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="terminal-title">terminal — zsh</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Empezar desde cero</span></div>
+        <div><span class="t-prompt">➜</span> <span class="t-cmd">git init mi-proyecto</span></div>
+        <div><span class="t-output">Initialized empty Git repository</span></div>
+        <br>
+        <div><span class="t-comment"># O clonar uno existente</span></div>
+        <div><span class="t-prompt">➜</span> <span class="t-cmd">git clone <span class="t-highlight">URL</span></span></div>
+        <div><span class="t-output">Cloning into 'proyecto'...</span></div>
+        <br>
+        <div><span class="t-comment"># Guardar tus cambios</span></div>
+        <div><span class="t-prompt">➜</span> <span class="t-cmd">git add . && git commit -m <span class="t-highlight">"msg"</span></span></div>
+        <div><span class="t-prompt">➜</span> <span class="t-cmd">git push<span class="cursor"></span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDEX -->
+<div class="section-full" style="background: var(--ink); border-bottom: none;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="section-label" style="color: var(--accent);">En esta guía</div>
+    <div class="index-grid" style="margin-top: 1.5rem;">
+      <a href="#que-es" class="index-item"><span class="num">01</span><span class="label">¿Qué es un repo?</span></a>
+      <a href="#crear" class="index-item"><span class="num">02</span><span class="label">Crear un repo</span></a>
+      <a href="#clonar" class="index-item"><span class="num">03</span><span class="label">Clonar & conectar</span></a>
+      <a href="#commit" class="index-item"><span class="num">04</span><span class="label">Hacer un commit</span></a>
+      <a href="#carpetas" class="index-item"><span class="num">05</span><span class="label">Estructura de carpetas</span></a>
+      <a href="#branches" class="index-item"><span class="num">06</span><span class="label">Git & Branches</span></a>
+      <a href="#deploy" class="index-item"><span class="num">07</span><span class="label">Deploy</span></a>
+      <a href="#storybook" class="index-item"><span class="num">08</span><span class="label">Storybook</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- 01 QUE ES -->
+<section id="que-es" class="section fade-in">
+  <div class="section-label">01 — Conceptos base</div>
+  <h2 class="section-title">¿Qué es un <em>repositorio</em>?</h2>
+  <p class="section-intro">Antes de tocar la terminal, entendamos qué es todo esto. Sin jerga técnica.</p>
+
+  <div class="analogy">
+    <div class="analogy-side">
+      <span class="analogy-emoji">📁</span>
+      <div class="analogy-label">En Figma / Drive</div>
+      <div class="analogy-concept">Archivo de proyecto</div>
+      <div class="analogy-desc">Guardás versiones, compartís con el equipo, todos pueden editar</div>
+    </div>
+    <div class="analogy-arrow">→</div>
+    <div class="analogy-side">
+      <span class="analogy-emoji">🗃️</span>
+      <div class="analogy-label">En código</div>
+      <div class="analogy-concept">Repositorio (Repo)</div>
+      <div class="analogy-desc">Carpeta especial que guarda TODO el historial de cambios del proyecto</div>
+    </div>
+  </div>
+
+  <div class="three-col" style="margin-top: 2rem;">
+    <div class="card">
+      <span class="card-icon">📸</span>
+      <h3>Git = Historial de fotos</h3>
+      <p>Git saca una "foto" de tu proyecto cada vez que vos se lo pedís. Podés volver a cualquier foto anterior en cualquier momento.</p>
+      <span class="card-tag tag-y">Git</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">☁️</span>
+      <h3>GitHub = Google Drive del código</h3>
+      <p>GitHub es donde subís esas fotos a la nube. El equipo entero puede verlas, bajarlas y trabajar sobre ellas.</p>
+      <span class="card-tag tag-b">GitHub</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">💻</span>
+      <h3>Local vs. Remoto</h3>
+      <p><strong>Local</strong> = en tu computadora. <strong>Remoto</strong> = en GitHub. Siempre sincronizás entre ambos con push y pull.</p>
+      <span class="card-tag tag-p">Concepto</span>
+    </div>
+  </div>
+
+  <div class="info-box note" style="margin-top: 2rem;">
+    <strong>💡 La analogía perfecta</strong>
+    Imaginá que Git es como el historial de versiones de Figma, pero para carpetas enteras de código. GitHub es el servidor donde vive ese historial compartido.
+  </div>
+</section>
+
+<!-- 02 CREAR -->
+<section id="crear" class="section fade-in">
+  <div class="section-label">02 — Primeros pasos</div>
+  <h2 class="section-title">Crear un <em>nuevo</em> repositorio</h2>
+  <p class="section-intro">Dos formas: desde GitHub (recomendada para designers) o desde la terminal.</p>
+
+  <div class="two-col">
+    <div>
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;font-size:1rem;">🖱️ Opción A — Desde GitHub (más fácil)</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num green">1</div>
+          <div class="step-content">
+            <h3>Ir a github.com</h3>
+            <p>Iniciá sesión y hacé click en el botón <strong>+</strong> arriba a la derecha → "New repository".</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num green">2</div>
+          <div class="step-content">
+            <h3>Ponerle nombre</h3>
+            <p>Elegí un nombre sin espacios. Ej: <span class="inline-code">mi-sistema-de-diseno</span>. Activá "Add a README file".</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num green">3</div>
+          <div class="step-content">
+            <h3>¡Listo!</h3>
+            <p>Tu repo ya existe en la nube. Ahora lo podés clonar a tu computadora (ver sección 03).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;font-size:1rem;">⌨️ Opción B — Desde la terminal</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Terminal</span><span class="code-title-label">Crear repo local</span></div>
+        <div class="code-body">
+<span class="c"># 1. Ir a la carpeta del proyecto</span>
+<span class="cmd">cd</span> /ruta/a/mi-proyecto
+
+<span class="c"># 2. Inicializar git</span>
+<span class="cmd">git init</span>
+
+<span class="c"># 3. Conectar con GitHub</span>
+<span class="cmd">git remote add</span> origin <span class="str">https://github.com/user/repo.git</span>
+
+<span class="c"># 4. Primer push</span>
+<span class="cmd">git push</span> <span class="flag">-u</span> origin main
+        </div>
+      </div>
+      <div class="info-box tip">
+        <strong>✅ Tip para designers</strong>
+        Si usás GitHub Desktop, podés hacer todo esto con una interfaz visual sin tocar la terminal.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 CLONAR -->
+<section id="clonar" class="section fade-in">
+  <div class="section-label">03 — Traer el código a tu máquina</div>
+  <h2 class="section-title"><em>Clonar</em> un repositorio</h2>
+  <p class="section-intro">Clonar = descargar una copia completa del proyecto (con todo su historial) a tu computadora.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num accent">1</div>
+      <div class="step-content">
+        <h3>Copiar la URL del repo</h3>
+        <p>En GitHub, entrá al repositorio → botón verde <strong>"Code"</strong> → copiá la URL HTTPS: <span class="inline-code">https://github.com/equipo/proyecto.git</span></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">2</div>
+      <div class="step-content">
+        <h3>Elegir dónde guardar</h3>
+        <p>En la terminal, navegá a la carpeta donde querés que viva el proyecto: <span class="inline-code">cd ~/Documents/proyectos</span></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num accent">3</div>
+      <div class="step-content">
+        <h3>Ejecutar el comando clone</h3>
+        <p>Escribí <span class="inline-code">git clone URL</span>. Git crea una carpeta con todo el proyecto adentro automáticamente.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Terminal</span><span class="code-title-label">git clone</span></div>
+    <div class="code-body">
+<span class="c"># Clonar en la carpeta actual</span>
+<span class="cmd">git clone</span> <span class="str">https://github.com/equipo/proyecto.git</span>
+
+<span class="c"># Clonar con un nombre personalizado</span>
+<span class="cmd">git clone</span> <span class="str">https://github.com/equipo/proyecto.git</span> <span class="key">mi-nombre-local</span>
+
+<span class="c"># Entrar al proyecto clonado</span>
+<span class="cmd">cd</span> proyecto
+
+<span class="c"># Ver el estado actual</span>
+<span class="cmd">git status</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">📂 Tengo una carpeta ya creada — ¿Cómo la conecto a un repo?</h3>
+  <p style="color:var(--muted);margin-bottom:1.5rem;font-size:0.85rem;">Este es el caso donde ya trabajaste en local y ahora querés subir todo a GitHub.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Terminal</span><span class="code-title-label">Conectar carpeta existente a GitHub</span></div>
+    <div class="code-body">
+<span class="c"># 1. Entrar a tu carpeta existente</span>
+<span class="cmd">cd</span> /ruta/a/mi-carpeta-existente
+
+<span class="c"># 2. Inicializar git en ella</span>
+<span class="cmd">git init</span>
+
+<span class="c"># 3. Agregar todos los archivos</span>
+<span class="cmd">git add</span> .
+
+<span class="c"># 4. Primer commit</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: subida inicial del proyecto"</span>
+
+<span class="c"># 5. Conectar con el repo de GitHub (crealo antes en github.com)</span>
+<span class="cmd">git remote add</span> origin <span class="str">https://github.com/tuuser/tu-repo.git</span>
+
+<span class="c"># 6. Renombrar rama a main (estándar actual)</span>
+<span class="cmd">git branch</span> <span class="flag">-M</span> main
+
+<span class="c"># 7. Subir todo</span>
+<span class="cmd">git push</span> <span class="flag">-u</span> origin main
+    </div>
+  </div>
+</section>
+
+<!-- 04 COMMIT -->
+<section id="commit" class="section fade-in">
+  <div class="section-label">04 — El flujo del día a día</div>
+  <h2 class="section-title">Hacer un <em>commit</em></h2>
+  <p class="section-intro">Un commit es como "guardar" en videojuegos — un punto de control al que siempre podés volver.</p>
+
+  <div class="analogy">
+    <div class="analogy-side">
+      <span class="analogy-emoji">💾</span>
+      <div class="analogy-label">En Figma</div>
+      <div class="analogy-concept">Guardar versión</div>
+      <div class="analogy-desc">"Versión para cliente — 20 enero"</div>
+    </div>
+    <div class="analogy-arrow">≈</div>
+    <div class="analogy-side">
+      <span class="analogy-emoji">📦</span>
+      <div class="analogy-label">En Git</div>
+      <div class="analogy-concept">git commit</div>
+      <div class="analogy-desc">"feat: nuevo botón primario en componente Card"</div>
+    </div>
+  </div>
+
+  <div class="steps" style="margin-top:2rem;">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>git status — Ver qué cambió</h3>
+        <p>Antes de guardar, chequeá qué archivos modificaste. En rojo = sin seguimiento. En verde = listo para commit.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>git add — Elegir qué guardar</h3>
+        <p><span class="inline-code">git add .</span> agrega TODO. <span class="inline-code">git add archivo.js</span> agrega solo ese archivo.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>git commit — Sacar la foto</h3>
+        <p>El mensaje describe QUÉ cambiaste. Sé específico: <span class="inline-code">"fix: color de hover en botones"</span> es mejor que <span class="inline-code">"cambios"</span>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>git push — Subir a la nube</h3>
+        <p>Sube tus commits locales a GitHub. Sin push, los cambios solo existen en tu computadora.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block" style="margin-top:2rem;">
+    <div class="code-header"><span class="code-lang">Terminal</span><span class="code-title-label">Flujo completo de commit</span></div>
+    <div class="code-body">
+<span class="c"># Ver qué cambió</span>
+<span class="cmd">git status</span>
+
+<span class="c"># Agregar todo al próximo commit</span>
+<span class="cmd">git add</span> .
+
+<span class="c"># O solo ciertos archivos</span>
+<span class="cmd">git add</span> src/components/Button.jsx src/styles/button.css
+
+<span class="c"># Crear el commit con mensaje descriptivo</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: rediseño de botón primario con nuevo radio y sombra"</span>
+
+<span class="c"># Subir a GitHub</span>
+<span class="cmd">git push</span>
+
+<span class="c"># Ver historial de commits</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span>
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <strong>📝 Cómo escribir buenos mensajes de commit</strong>
+    Usá prefijos: <strong>feat:</strong> (nueva funcionalidad), <strong>fix:</strong> (corrección), <strong>style:</strong> (cambios visuales), <strong>docs:</strong> (documentación). Ej: <code>style: actualizar tokens de color a nueva paleta</code>
+  </div>
+</section>
+
+<!-- 05 CARPETAS -->
+<section id="carpetas" class="section fade-in">
+  <div class="section-label">05 — Orientarse en el código</div>
+  <h2 class="section-title">Estructura de <em>carpetas</em></h2>
+  <p class="section-intro">Cada tecnología tiene su convención. Acá te explicamos qué significa cada carpeta y por qué existe.</p>
+
+  <div class="tech-tabs">
+    <button class="tech-tab active" onclick="showTech('react', this)">React / Next.js</button>
+    <button class="tech-tab" onclick="showTech('vue', this)">Vue / Nuxt</button>
+    <button class="tech-tab" onclick="showTech('generico', this)">Proyecto genérico</button>
+  </div>
+
+  <div id="tech-react" class="tech-content active">
+    <div class="two-col">
+      <div class="folder-tree">
+<span class="folder">📁 mi-proyecto/</span>
+├── <span class="special">📄 .gitignore</span>         <span class="comment"># archivos que git ignora</span>
+├── <span class="special">📄 package.json</span>        <span class="comment"># lista de dependencias</span>
+├── <span class="special">📄 README.md</span>           <span class="comment"># documentación</span>
+│
+├── <span class="folder">📁 public/</span>             <span class="comment"># archivos estáticos</span>
+│   ├── <span class="file">favicon.ico</span>
+│   └── <span class="file">logo.svg</span>
+│
+├── <span class="folder">📁 src/</span>                <span class="comment"># ← acá vivís vos</span>
+│   ├── <span class="folder">📁 components/</span>     <span class="comment"># piezas reutilizables</span>
+│   │   ├── <span class="file">Button.jsx</span>
+│   │   ├── <span class="file">Card.jsx</span>
+│   │   └── <span class="file">Modal.jsx</span>
+│   │
+│   ├── <span class="folder">📁 pages/</span>          <span class="comment"># cada pantalla</span>
+│   │   ├── <span class="file">Home.jsx</span>
+│   │   └── <span class="file">About.jsx</span>
+│   │
+│   ├── <span class="folder">📁 styles/</span>         <span class="comment"># CSS y tokens</span>
+│   │   ├── <span class="important">tokens.css</span>     <span class="comment"># colores, tipografía</span>
+│   │   └── <span class="file">globals.css</span>
+│   │
+│   └── <span class="folder">📁 assets/</span>         <span class="comment"># imágenes, íconos, fonts</span>
+│
+└── <span class="folder">📁 node_modules/</span>       <span class="comment"># NO tocar, auto-generado</span>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📁 src/components/</h3>
+          <p>Las "piezas" del diseño hecho código. Cada componente de Figma suele tener su archivo acá. <strong>Acá es donde más vas a trabajar.</strong></p>
+        </div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📁 src/styles/ o tokens/</h3>
+          <p>Acá viven los <strong>design tokens</strong>: colores, tipografías, espaciados. Si cambiás algo acá, afecta a todo el proyecto.</p>
+        </div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📁 public/</h3>
+          <p>Imágenes y assets que van directamente al navegador. Logo, favicon, PDFs, etc.</p>
+        </div>
+        <div class="card">
+          <h3>📁 node_modules/</h3>
+          <p>Auto-generado. <strong>Nunca lo toques ni lo subas a git.</strong> Son las dependencias instaladas — se regeneran solas.</p>
+          <span class="card-tag tag-o">⚠️ No editar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tech-vue" class="tech-content">
+    <div class="two-col">
+      <div class="folder-tree">
+<span class="folder">📁 mi-proyecto-vue/</span>
+├── <span class="special">📄 nuxt.config.ts</span>      <span class="comment"># configuración global</span>
+├── <span class="special">📄 package.json</span>
+│
+├── <span class="folder">📁 pages/</span>              <span class="comment"># rutas automáticas</span>
+│   ├── <span class="file">index.vue</span>          <span class="comment"># → / (home)</span>
+│   └── <span class="file">about.vue</span>          <span class="comment"># → /about</span>
+│
+├── <span class="folder">📁 components/</span>
+│   ├── <span class="folder">📁 ui/</span>             <span class="comment"># componentes base</span>
+│   └── <span class="folder">📁 layout/</span>         <span class="comment"># header, footer</span>
+│
+├── <span class="folder">📁 assets/</span>
+│   ├── <span class="important">css/tokens.css</span>     <span class="comment"># design tokens</span>
+│   └── <span class="folder">📁 images/</span>
+│
+└── <span class="folder">📁 public/</span>             <span class="comment"># archivos estáticos</span>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📁 pages/</h3>
+          <p>En Nuxt/Vue, cada archivo .vue en esta carpeta <strong>automáticamente se convierte en una página</strong>. index.vue es el home.</p>
+        </div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📄 *.vue (archivos)</h3>
+          <p>Un archivo .vue tiene todo junto: estructura HTML, estilos CSS y lógica. Como un componente de Figma con todo adentro.</p>
+        </div>
+        <div class="card">
+          <h3>📁 composables/</h3>
+          <p>Funciones reutilizables entre páginas. Como los estilos compartidos en Figma, pero para comportamiento.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tech-generico" class="tech-content">
+    <div class="two-col">
+      <div class="folder-tree">
+<span class="folder">📁 cualquier-proyecto/</span>
+│
+├── <span class="special">📄 .gitignore</span>         <span class="comment"># archivos excluidos de git</span>
+├── <span class="special">📄 README.md</span>          <span class="comment"># "qué es este proyecto"</span>
+├── <span class="special">📄 CHANGELOG.md</span>       <span class="comment"># historial de cambios</span>
+│
+├── <span class="folder">📁 src/</span>               <span class="comment"># código fuente principal</span>
+├── <span class="folder">📁 dist/</span>              <span class="comment"># versión compilada (NO editar)</span>
+├── <span class="folder">📁 docs/</span>              <span class="comment"># documentación</span>
+├── <span class="folder">📁 tests/</span>             <span class="comment"># pruebas automáticas</span>
+│
+└── <span class="folder">📁 .github/</span>           <span class="comment"># configuración de GitHub</span>
+    └── <span class="folder">📁 workflows/</span>     <span class="comment"># automatizaciones CI/CD</span>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📄 .gitignore</h3>
+          <p>Lista de archivos que git NO rastrea: <code>node_modules/</code>, archivos con contraseñas (.env), temporales del sistema.</p>
+        </div>
+        <div class="card" style="margin-bottom:1rem;">
+          <h3>📁 dist/ o build/</h3>
+          <p>Versión "compilada" lista para producción. <strong>Nunca edites archivos acá</strong> — se regeneran automáticamente.</p>
+          <span class="card-tag tag-o">Solo lectura</span>
+        </div>
+        <div class="card">
+          <h3>📄 README.md</h3>
+          <p>La "portada" del proyecto. Explica qué es, cómo instalarlo y cómo usarlo. Siempre léelo primero.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box warn" style="margin-top:2rem;">
+    <strong>⚠️ Archivos que nunca debés commitear</strong>
+    <strong>.env</strong> (contraseñas y API keys), <strong>node_modules/</strong> (pesado, auto-generado), archivos temporales del sistema (.DS_Store en Mac). Asegurate de que estén en el .gitignore.
+  </div>
+</section>
+
+<!-- 06 BRANCHES -->
+<section id="branches" class="section fade-in">
+  <div class="section-label">06 — Trabajo en equipo</div>
+  <h2 class="section-title">Git, <em>branches</em> y ramas</h2>
+  <p class="section-intro">Las branches (ramas) son copias paralelas del proyecto donde podés trabajar sin afectar la versión principal.</p>
+
+  <div class="analogy">
+    <div class="analogy-side">
+      <span class="analogy-emoji">🌿</span>
+      <div class="analogy-label">Analogía</div>
+      <div class="analogy-concept">Duplicar archivo Figma</div>
+      <div class="analogy-desc">Trabajás sobre la copia, probás sin miedo, y cuando está bien lo unís al original</div>
+    </div>
+    <div class="analogy-arrow">≈</div>
+    <div class="analogy-side">
+      <span class="analogy-emoji">🌱</span>
+      <div class="analogy-label">En Git</div>
+      <div class="analogy-concept">Branch (rama)</div>
+      <div class="analogy-desc">Cada feature o cambio vive en su rama hasta estar listo para mergear a main</div>
+    </div>
+  </div>
+
+  <div class="branch-viz">
+    <div style="color:#555;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1.5rem;font-family:'Syne',sans-serif;">Visualización de ramas — hover para ver mensajes →</div>
+
+    <div class="branch-line">
+      <div class="branch-name" style="color:var(--accent3);">main</div>
+      <div class="branch-track">
+        <div class="commit-dot" style="background:var(--accent3);border-color:var(--accent3);" data-msg="init: proyecto base"></div>
+        <div class="branch-rail" style="background:var(--accent3);flex:0 0 40px;"></div>
+        <div class="commit-dot" style="background:var(--accent3);border-color:var(--accent3);" data-msg="fix: header responsive"></div>
+        <div class="branch-rail" style="background:var(--accent3);flex:0 0 120px;"></div>
+        <div class="commit-dot" style="background:var(--accent3);border-color:var(--accent3);width:18px;height:18px;" data-msg="merge: feature/button ✓"></div>
+        <div class="branch-rail" style="background:var(--accent3);flex:0 0 40px;"></div>
+        <div class="commit-dot" style="background:var(--accent3);border-color:var(--accent3);" data-msg="style: nuevos tokens"></div>
+        <div class="branch-rail" style="background:var(--accent3);"></div>
+        <span class="branch-label">producción estable</span>
+      </div>
+    </div>
+
+    <div class="branch-line" style="margin-top:0.5rem;">
+      <div class="branch-name" style="color:var(--accent);">feature/</div>
+      <div class="branch-track" style="margin-left:60px;">
+        <div class="commit-dot" style="background:var(--accent);border-color:var(--accent);" data-msg="feat: nuevo botón"></div>
+        <div class="branch-rail" style="background:var(--accent);flex:0 0 40px;"></div>
+        <div class="commit-dot" style="background:var(--accent);border-color:var(--accent);" data-msg="style: hover state"></div>
+        <div class="branch-rail" style="background:var(--accent);flex:0 0 40px;"></div>
+        <div class="commit-dot" style="background:var(--accent);border-color:var(--accent);" data-msg="fix: colores corregidos"></div>
+        <div class="branch-rail" style="background:#333;"></div>
+        <span class="branch-label">nueva funcionalidad</span>
+      </div>
+    </div>
+
+    <div class="branch-line" style="margin-top:0.5rem;">
+      <div class="branch-name" style="color:var(--tag-blue);">fix/</div>
+      <div class="branch-track" style="margin-left:180px;">
+        <div class="commit-dot" style="background:var(--tag-blue);border-color:var(--tag-blue);" data-msg="fix: bug en mobile"></div>
+        <div class="branch-rail" style="background:var(--tag-blue);flex:0 0 40px;"></div>
+        <div class="commit-dot" style="background:var(--tag-blue);border-color:var(--tag-blue);" data-msg="fix: revisión QA"></div>
+        <div class="branch-rail" style="background:#333;"></div>
+        <span class="branch-label">corrección rápida</span>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;display:flex;gap:1.5rem;font-size:0.7rem;color:#666;font-family:'Syne',sans-serif;flex-wrap:wrap;">
+      <span style="display:flex;align-items:center;gap:0.3rem;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent3)"></span>main — estable</span>
+      <span style="display:flex;align-items:center;gap:0.3rem;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent)"></span>feature/ — nuevas funciones</span>
+      <span style="display:flex;align-items:center;gap:0.3rem;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--tag-blue)"></span>fix/ — correcciones</span>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Terminal</span><span class="code-title-label">Trabajar con branches</span></div>
+    <div class="code-body">
+<span class="c"># Ver en qué rama estás</span>
+<span class="cmd">git branch</span>
+
+<span class="c"># Crear nueva rama y moverse a ella</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> <span class="str">feature/nuevo-navbar</span>
+
+<span class="c"># Moverse a una rama existente</span>
+<span class="cmd">git checkout</span> main
+
+<span class="c"># Traer los últimos cambios de main</span>
+<span class="cmd">git pull</span> origin main
+
+<span class="c"># Unir una rama a main (merge)</span>
+<span class="cmd">git merge</span> feature/nuevo-navbar
+
+<span class="c"># Subir tu rama a GitHub</span>
+<span class="cmd">git push</span> origin feature/nuevo-navbar
+    </div>
+  </div>
+
+  <div class="three-col" style="margin-top:2rem;">
+    <div class="card">
+      <h3>🔀 Pull Request (PR)</h3>
+      <p>Cuando terminás tu rama, abrís un <strong>Pull Request</strong> en GitHub para que el equipo la revise antes de mergear a main.</p>
+      <span class="card-tag tag-b">Review</span>
+    </div>
+    <div class="card">
+      <h3>⚡ Merge</h3>
+      <p>Unir dos ramas. Cuando el PR es aprobado, los cambios de la rama pasan a main y están en producción.</p>
+      <span class="card-tag tag-g">Integrar</span>
+    </div>
+    <div class="card">
+      <h3>💥 Conflictos</h3>
+      <p>Cuando dos personas editaron el mismo archivo, git no sabe cuál mantener. El equipo de dev lo resuelve — avisales.</p>
+      <span class="card-tag tag-o">Pedir ayuda</span>
+    </div>
+  </div>
+
+  <div class="info-box tip" style="margin-top:1.5rem;">
+    <strong>🌿 Convención de nombres de ramas</strong>
+    <strong>main</strong> = producción | <strong>develop</strong> = desarrollo activo | <strong>feature/nombre</strong> = nueva funcionalidad | <strong>fix/nombre</strong> = corrección | <strong>hotfix/nombre</strong> = urgente en producción
+  </div>
+</section>
+
+<!-- 07 DEPLOY -->
+<section id="deploy" class="section fade-in">
+  <div class="section-label">07 — Publicar al mundo</div>
+  <h2 class="section-title"><em>Deploy</em>: de código a internet</h2>
+  <p class="section-intro">Deploy = publicar el proyecto. Pasar de "funciona en mi computadora" a "funciona para todos en internet".</p>
+
+  <div class="analogy">
+    <div class="analogy-side">
+      <span class="analogy-emoji">🖨️</span>
+      <div class="analogy-label">Analogía</div>
+      <div class="analogy-concept">Exportar a PDF</div>
+      <div class="analogy-desc">Convertís tu archivo de Figma en algo que otros pueden abrir sin Figma</div>
+    </div>
+    <div class="analogy-arrow">≈</div>
+    <div class="analogy-side">
+      <span class="analogy-emoji">🚀</span>
+      <div class="analogy-label">En código</div>
+      <div class="analogy-concept">Deploy</div>
+      <div class="analogy-desc">Convertís el código fuente en un sitio web que cualquier navegador puede abrir</div>
+    </div>
+  </div>
+
+  <div class="three-col" style="margin-top:2rem;">
+    <div class="card">
+      <span class="card-icon">▲</span>
+      <h3>Vercel</h3>
+      <p>El más popular para React/Next. Conectás tu repo de GitHub y cada push a main se publica automáticamente. <strong>Gratis para proyectos pequeños.</strong></p>
+      <span class="card-tag tag-b">Recomendado</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌐</span>
+      <h3>Netlify</h3>
+      <p>Similar a Vercel. Preview automático por cada PR — ¡ideal para designers! Podés ver el resultado real antes del merge.</p>
+      <span class="card-tag tag-g">Preview URLs</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">🐙</span>
+      <h3>GitHub Pages</h3>
+      <p>Gratis, directo desde GitHub. Perfecto para portfolios, documentación y proyectos simples sin backend.</p>
+      <span class="card-tag tag-y">Gratis</span>
+    </div>
+  </div>
+
+  <div style="background:var(--ink);border-radius:8px;padding:2rem;margin:2rem 0;color:var(--paper);">
+    <div class="section-label" style="color:var(--accent);">Flujo típico de deploy</div>
+    <div style="display:flex;gap:0.5rem;align-items:center;margin-top:1.5rem;flex-wrap:wrap;">
+      <div style="background:#222;padding:0.8rem 1.2rem;border-radius:4px;font-size:0.8rem;text-align:center;min-width:90px;">
+        <div style="font-size:1.2rem;margin-bottom:0.3rem;">✏️</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;">Escribís</div>
+        <div style="color:var(--muted);font-size:0.65rem;">feature branch</div>
+      </div>
+      <div style="color:var(--accent);font-size:1.2rem;">→</div>
+      <div style="background:#222;padding:0.8rem 1.2rem;border-radius:4px;font-size:0.8rem;text-align:center;min-width:90px;">
+        <div style="font-size:1.2rem;margin-bottom:0.3rem;">📦</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;">git push</div>
+        <div style="color:var(--muted);font-size:0.65rem;">a GitHub</div>
+      </div>
+      <div style="color:var(--accent);font-size:1.2rem;">→</div>
+      <div style="background:#222;padding:0.8rem 1.2rem;border-radius:4px;font-size:0.8rem;text-align:center;min-width:90px;">
+        <div style="font-size:1.2rem;margin-bottom:0.3rem;">🔍</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;">Pull Request</div>
+        <div style="color:var(--muted);font-size:0.65rem;">revisión</div>
+      </div>
+      <div style="color:var(--accent);font-size:1.2rem;">→</div>
+      <div style="background:#222;padding:0.8rem 1.2rem;border-radius:4px;font-size:0.8rem;text-align:center;min-width:90px;">
+        <div style="font-size:1.2rem;margin-bottom:0.3rem;">🔀</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;">Merge a main</div>
+        <div style="color:var(--muted);font-size:0.65rem;">aprobado</div>
+      </div>
+      <div style="color:var(--accent);font-size:1.2rem;">→</div>
+      <div style="background:var(--accent);padding:0.8rem 1.2rem;border-radius:4px;font-size:0.8rem;text-align:center;min-width:90px;">
+        <div style="font-size:1.2rem;margin-bottom:0.3rem;">🚀</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;">Deploy auto</div>
+        <div style="font-size:0.65rem;opacity:0.8;">¡en vivo!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-box note">
+      <strong>🔗 Preview deployments</strong>
+      Vercel y Netlify generan una URL de preview por cada PR. Así el equipo puede ver los cambios <strong>antes</strong> de que vayan a producción. Perfecto para revisar el resultado real en el navegador.
+    </div>
+    <div class="info-box warn">
+      <strong>⚠️ Ambientes: dev, staging, prod</strong>
+      <strong>dev</strong> = local en tu compu | <strong>staging</strong> = versión de prueba | <strong>production (prod)</strong> = lo que ven los usuarios reales. Nunca pushees directo a prod sin probar.
+    </div>
+  </div>
+</section>
+
+<!-- 08 STORYBOOK -->
+<section id="storybook" class="section fade-in">
+  <div class="section-label">08 — Design Systems & componentes</div>
+  <h2 class="section-title"><em>Storybook</em></h2>
+  <p class="section-intro">Storybook es un catálogo interactivo de todos los componentes del sistema de diseño, pero en código real y en el navegador.</p>
+
+  <div class="analogy">
+    <div class="analogy-side">
+      <span class="analogy-emoji">📚</span>
+      <div class="analogy-label">En Figma</div>
+      <div class="analogy-concept">Página de componentes</div>
+      <div class="analogy-desc">Donde listás todos tus components con sus variantes y estados</div>
+    </div>
+    <div class="analogy-arrow">≈</div>
+    <div class="analogy-side">
+      <span class="analogy-emoji">📖</span>
+      <div class="analogy-label">En código</div>
+      <div class="analogy-concept">Storybook</div>
+      <div class="analogy-desc">Igual pero en código real: cada componente con sus props, estados e interacciones</div>
+    </div>
+  </div>
+
+  <div class="sb-preview">
+    <div class="sb-bar">
+      <span class="sb-bar-logo">📖 Storybook</span>
+      <div class="sb-bar-nav">
+        <span class="sb-active">Canvas</span>
+        <span>Docs</span>
+        <span>Controls</span>
+      </div>
+    </div>
+    <div class="sb-layout">
+      <div class="sb-sidebar">
+        <h4>Components</h4>
+        <div class="sb-item">▸ Atoms</div>
+        <div class="sb-item sb-child">Button</div>
+        <div class="sb-item sb-child sb-selected">&nbsp;&nbsp;→ Primary</div>
+        <div class="sb-item sb-child" style="font-size:0.7rem;">&nbsp;&nbsp;→ Secondary</div>
+        <div class="sb-item sb-child" style="font-size:0.7rem;">&nbsp;&nbsp;→ Ghost</div>
+        <div class="sb-item">▸ Molecules</div>
+        <div class="sb-item sb-child" style="font-size:0.7rem;">Card</div>
+        <div class="sb-item sb-child" style="font-size:0.7rem;">Input</div>
+        <div class="sb-item">▸ Organisms</div>
+        <div class="sb-item sb-child" style="font-size:0.7rem;">Navbar</div>
+      </div>
+      <div class="sb-canvas">
+        <button class="demo-btn primary">Primary</button>
+        <button class="demo-btn secondary">Secondary</button>
+        <button class="demo-btn ghost">Ghost</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="three-col" style="margin-top:2rem;">
+    <div class="card">
+      <span class="card-icon">👀</span>
+      <h3>Para designers: inspección</h3>
+      <p>Podés inspeccionar cualquier componente en el estado que quieras: hover, disabled, loading. Sin esperar que el dev te lo muestre.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📐</span>
+      <h3>Stories = estados del componente</h3>
+      <p>Cada "story" es una variante o estado del componente. Como las variants de Figma, pero en código real que interactúa de verdad.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔗</span>
+      <h3>Fuente de verdad compartida</h3>
+      <p>Storybook puede conectarse al diseño de Figma. Es el puente entre el design system y la implementación en código.</p>
+    </div>
+  </div>
+
+  <div class="code-block" style="margin-top:2rem;">
+    <div class="code-header"><span class="code-lang">Terminal</span><span class="code-title-label">Correr Storybook</span></div>
+    <div class="code-body">
+<span class="c"># Instalar Storybook en un proyecto existente</span>
+<span class="cmd">npx storybook@latest init</span>
+
+<span class="c"># Correr Storybook (abre en el navegador)</span>
+<span class="cmd">npm run storybook</span>
+
+<span class="c"># Build para deployar</span>
+<span class="cmd">npm run build-storybook</span>
+
+<span class="c"># Se abre en:</span>
+<span class="key">http://localhost:6006</span>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">JavaScript / JSX</span><span class="code-title-label">Button.stories.jsx — cómo se ve una story</span></div>
+    <div class="code-body">
+<span class="c">// Cada archivo .stories.jsx define las variantes de un componente</span>
+<span class="key">export default</span> {
+  title: <span class="str">'Atoms/Button'</span>,     <span class="c">// ← dónde aparece en el sidebar</span>
+  component: Button,
+};
+
+<span class="c">// Cada "story" es una variante (como en Figma)</span>
+<span class="key">export const</span> Primary = {
+  args: { variant: <span class="str">'primary'</span>, label: <span class="str">'Confirmar'</span> },
+};
+
+<span class="key">export const</span> Disabled = {
+  args: { variant: <span class="str">'primary'</span>, label: <span class="str">'Confirmar'</span>, disabled: <span class="flag">true</span> },
+};
+    </div>
+  </div>
+
+  <div class="info-box note">
+    <strong>💡 Chromatic — Storybook en la nube</strong>
+    Chromatic es el "GitHub para Storybook". Guarda capturas de cada componente y alerta si algo cambió visualmente entre commits. Como un diff visual automático. Muy usado por equipos de design systems.
+  </div>
+</section>
+
+<!-- CHEAT SHEET -->
+<section class="section-full fade-in" style="background:var(--ink);">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label" style="color:var(--accent);">Referencia rápida</div>
+    <h2 class="section-title" style="color:var(--paper);">Cheat Sheet <em>esencial</em></h2>
+
+    <div class="two-col" style="margin-top:2rem;gap:1.5rem;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;">COMANDOS BÁSICOS</div>
+        <div class="folder-tree">
+<span class="cmd">git init</span>              <span class="comment">→ crear repo local</span>
+<span class="cmd">git clone</span> [URL]       <span class="comment">→ copiar repo</span>
+<span class="cmd">git status</span>            <span class="comment">→ ver qué cambió</span>
+<span class="cmd">git add</span> .             <span class="comment">→ preparar cambios</span>
+<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"msg"</span>  <span class="comment">→ guardar snapshot</span>
+<span class="cmd">git push</span>              <span class="comment">→ subir a GitHub</span>
+<span class="cmd">git pull</span>              <span class="comment">→ bajar cambios</span>
+<span class="cmd">git log</span> <span class="flag">--oneline</span>    <span class="comment">→ ver historial</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;">BRANCHES</div>
+        <div class="folder-tree">
+<span class="cmd">git branch</span>             <span class="comment">→ ver ramas</span>
+<span class="cmd">git checkout</span> <span class="flag">-b</span> [rama] <span class="comment">→ crear y moverse</span>
+<span class="cmd">git checkout</span> main      <span class="comment">→ volver a main</span>
+<span class="cmd">git merge</span> [rama]       <span class="comment">→ unir rama</span>
+<span class="cmd">git push</span> origin [rama] <span class="comment">→ subir rama</span>
+<span class="cmd">git stash</span>              <span class="comment">→ guardar sin commit</span>
+<span class="cmd">git stash pop</span>          <span class="comment">→ recuperar stash</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;border-top:1px solid #222;padding-top:2rem;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;">GLOSARIO PARA DESIGNERS</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;">
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Repository (Repo)</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">La carpeta del proyecto con todo su historial de cambios</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Commit</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">Un "snapshot" del proyecto en un momento. Como guardar versión en Figma.</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Branch / Rama</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">Copia paralela del proyecto para trabajar sin afectar lo estable</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Merge</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">Unir dos ramas. Incorporar los cambios de una rama a otra.</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Pull Request (PR)</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">Solicitud de revisión antes de mergear. Revisión de pares en equipo.</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Deploy</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">Publicar el proyecto. Pasar el código a internet para que todos lo vean.</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">main / master</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">La rama principal. Lo que está acá va a producción.</div>
+        </div>
+        <div style="background:#1a1916;border-radius:4px;padding:1rem;border:1px solid #2a2a28;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent3);font-size:0.85rem;margin-bottom:0.3rem;">Storybook</div>
+          <div style="font-size:0.78rem;color:#666;line-height:1.6;">Catálogo visual e interactivo de todos los componentes del sistema.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Hecho para que designers entiendan el mundo del código 🎨</p>
+  <p style="margin-top:0.5rem;">Git &amp; Repos sin miedo — <strong>Guía para Designers</strong></p>
+</footer>
+
+<script>
+  function showTech(tech, btn) {
+    document.querySelectorAll('.tech-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tech-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('tech-' + tech).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

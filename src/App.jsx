@@ -1,21 +1,18 @@
+import { Routes, Route } from 'react-router-dom'
 import './styles/globals.css'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Ticker from './components/Ticker'
-import Resources from './components/Resources'
-import HowItWorks from './components/HowItWorks'
-import About from './components/About'
 import Footer from './components/Footer'
+import Home from './pages/Home'
+import GitGuide from './pages/GitGuide'
 
 function App() {
   return (
     <>
       <Navbar />
-      <Hero />
-      <Ticker />
-      <Resources />
-      <HowItWorks />
-      <About />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/git-para-designers" element={<GitGuide />} />
+      </Routes>
       <Footer />
     </>
   )
