@@ -23,8 +23,10 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.7; overflow-x: hidden; }
-  nav { position: fixed; top: 0; left: 0; right: 0; background: var(--ink); z-index: 100; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; border-bottom: 2px solid var(--accent); }
-  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--paper); letter-spacing: -0.02em; }
+  nav { position: fixed; top: 0; left: 0; right: 0; nav {
+  background: #eef1f5;
+  border-bottom: 2px solid var(--accent); z-index: 100; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; border-bottom: 2px solid var(--accent); }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--ink); letter-spacing: -0.02em; }
   .nav-logo span { color: var(--accent); }
   .nav-links { display: flex; gap: 1.5rem; list-style: none; }
   .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
