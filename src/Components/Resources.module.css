@@ -1,0 +1,7 @@
+.section { padding: 5rem; border-bottom: 1px solid var(--line); max-width: 1200px; margin: 0 auto; }
+.label { font-family: var(--font-display); font-weight: 700; font-size: .63rem; text-transform: uppercase; letter-spacing: .2em; color: var(--accent); margin-bottom: .4rem; }
+.title { font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 3.5vw, 2.8rem); letter-spacing: -.03em; line-height: 1.05; color: var(--ink); margin-bottom: .8rem; }
+.title em { font-family: var(--font-serif); font-style: italic; font-weight: 300; color: var(--accent); }
+.intro { color: var(--muted); max-width: 560px; line-height: 1.85; margin-bottom: 3rem; font-size: .88rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+@media (max-width: 900px) { .section { padding: 3rem 1.5rem; } }

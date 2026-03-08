@@ -1,0 +1,21 @@
+.card { background: white; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; transition: all .2s; display: flex; flex-direction: column; cursor: pointer; }
+.card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.1); transform: translateY(-3px); border-color: var(--accent); }
+.comingSoon { opacity: .55; pointer-events: none; }
+.top { padding: 1.8rem 1.8rem 1.2rem; border-bottom: 1px solid var(--line); background: var(--paper); flex: 1; }
+.badge { display: inline-flex; align-items: center; gap: .3rem; font-family: var(--font-display); font-weight: 700; font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; padding: .2rem .6rem; border-radius: 2px; margin-bottom: 1rem; }
+.badgeNew { background: var(--tag-yellow); color: var(--ink); }
+.badgeWip { background: var(--line); color: var(--muted); }
+.tags { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.tag { padding: .25rem .6rem; border-radius: 2px; font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-family: var(--font-display); }
+.yellow { background: var(--tag-yellow); color: var(--ink); }
+.blue   { background: var(--tag-blue);   color: var(--ink); }
+.green  { background: var(--accent3);    color: var(--ink); }
+.pink   { background: var(--tag-pink);   color: var(--ink); }
+.orange { background: var(--accent);     color: white; }
+.title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; letter-spacing: -.02em; margin-bottom: .4rem; }
+.desc { font-size: .78rem; color: var(--muted); line-height: 1.7; }
+.bottom { padding: 1rem 1.8rem; display: flex; align-items: center; justify-content: space-between; }
+.meta { display: flex; gap: 1rem; }
+.metaItem { font-size: .68rem; color: var(--muted); }
+.arrow { font-family: var(--font-display); font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); transition: letter-spacing .2s; }
+.card:hover .arrow { letter-spacing: .14em; }

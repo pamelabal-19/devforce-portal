@@ -1,0 +1,6 @@
+.ticker { background: var(--accent); overflow: hidden; padding: .55rem 0; }
+.track { display: flex; white-space: nowrap; animation: ticker 28s linear infinite; }
+.track:hover { animation-play-state: paused; }
+.item { font-family: var(--font-display); font-weight: 700; font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; color: white; padding: 0 1.5rem; opacity: .9; }
+.sep { color: rgba(255,255,255,.4); }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
