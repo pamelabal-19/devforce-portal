@@ -14,7 +14,7 @@ const RESOURCES = [
       { label: 'Storybook', color: 'pink'   },
     ],
     meta: ['📖 8 secciones', '🎯 Designers'],
-    available: true, href: '#',
+    available: true, href: '/git-para-designers',,
   },
   {
     title: 'Design System & Style Guide',
